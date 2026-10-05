@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#E8E5DE">
+<title>OFFSEASON Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=Big+Shoulders+Display:wght@800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="products.js"></script>
+<script src="core.js"></script>
+<style>
+:root{--bg:#E8E5DE;--paper:#F2F0EB;--ink:#0E0E0D;--stone:#7D796F;--line:#C9C5BB;--bad:#A3261C;--ok:#1F6B3A;
+--head:'Big Shoulders Display','Arial Narrow',Impact,sans-serif;--body:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'DM Mono',ui-monospace,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.45 var(--body);-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.mono{font:500 11px/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+
+/* gate */
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.gbox{width:100%;max-width:420px;border:1px solid var(--ink);background:var(--paper);padding:30px 26px;display:flex;flex-direction:column;gap:16px}
+.glogo{font:900 52px/.85 var(--head);text-transform:uppercase}
+.gerr{border:1px solid var(--bad);color:var(--bad);padding:10px 12px}
+.fine{color:var(--stone);font-size:13px}
+.link{text-decoration:underline;color:var(--stone);min-height:44px}
+.chk{display:flex;align-items:center;gap:10px;min-height:44px}
+.chk input{width:22px;height:22px;accent-color:var(--ink)}
+
+/* top + tabs */
+.top{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid var(--ink);display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:60px;padding:0 16px}
+.brand-a{display:flex;align-items:baseline;gap:10px}
+.brand-a b{font:900 28px/1 var(--head);letter-spacing:.03em}
+.top-r{display:flex;align-items:center;gap:6px}
+.tb{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid var(--ink);font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
+.tb:active{background:var(--ink);color:var(--bg)}
+#saved{color:var(--stone);margin-right:6px;white-space:nowrap}
+#saved.bad{color:var(--bad)}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;border-bottom:1px solid var(--line);scrollbar-width:none;position:sticky;top:60px;z-index:30;background:var(--bg)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;min-height:46px;padding:0 18px;border:1px solid var(--ink);font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.tab.on{background:var(--ink);color:var(--bg)}
+.wrap{display:block}
+#ed{padding:20px 16px 120px;max-width:820px;margin:0 auto}
+#pv{display:none}
+.pvbtn{display:inline-flex}
+@media(min-width:1000px){
+  .wrap{display:grid;grid-template-columns:minmax(420px,1fr) minmax(0,1.1fr);height:calc(100vh - 120px)}
+  #ed{overflow:auto;max-width:none;margin:0;width:100%;padding-bottom:60px}
+  #pv{display:flex;flex-direction:column;border-left:1px solid var(--ink);min-height:0}
+  .pvbtn{display:none}
+}
+.pv-open #pv{display:flex;flex-direction:column;position:fixed;inset:0;z-index:100;background:var(--bg)}
+.pv-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--ink);background:var(--bg)}
+.pv-bar .tb{min-height:40px}
+.pv-bar .tb.on{background:var(--ink);color:var(--bg)}
+.pv-frame{flex:1;min-height:0;display:flex;justify-content:center;background:#cfcbc1}
+.pv-frame iframe{border:0;width:100%;height:100%;background:#fff}
+.pv-frame.phone iframe{width:390px;max-width:100%}
+.pv-close{margin-left:auto}
+@media(min-width:1000px){.pv-close{display:none}}
+
+/* content */
+h2.t{font:900 clamp(40px,7vw,64px)/.88 var(--head);text-transform:uppercase;margin-bottom:6px}
+.hint{color:var(--stone);margin-bottom:18px;font-size:14px}
+.blk{background:var(--paper);border:1px solid var(--ink);padding:18px;margin-bottom:18px}
+.blk h3{font:500 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.f{margin-bottom:16px}
+.f>label,.lab{display:block;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.f small{display:block;color:var(--stone);font-size:13px;margin-top:5px}
+input[type=text],input[type=number],input[type=email],input[type=tel],input[type=password],input[type=url],input:not([type]),select,textarea{width:100%;min-height:50px;padding:12px;border:1px solid var(--ink);background:#fff;border-radius:0;font-size:16px;-webkit-appearance:none;appearance:none}
+textarea{min-height:110px;resize:vertical}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 20px) 22px,calc(100% - 15px) 22px;background-size:5px 5px;background-repeat:no-repeat;padding-right:36px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 22px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);font:500 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+.btn.full{width:100%}
+.btn:active{transform:translateY(1px)}
+.btn.sm{min-height:44px;padding:0 14px}
+.bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.bar .search{flex:1;min-width:180px}
+.back{min-height:44px;font:500 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;text-decoration:underline}
+.list{border:1px solid var(--ink);background:var(--paper)}
+.row{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;width:100%;text-align:left;padding:10px 14px;min-height:84px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row:active{background:var(--bg)}
+.th{width:64px;aspect-ratio:4/5;background:#CFCBC1;overflow:hidden;position:relative;display:block}
+.th img{width:100%;height:100%;object-fit:cover}
+.th i{position:absolute;left:5px;bottom:4px;font:900 20px/.9 var(--head);font-style:normal}
+.rt b{display:block;font-weight:500}
+.rt i{font-style:normal;color:var(--stone);font-size:13px}
+.rr{text-align:right;font:500 13px var(--mono)}
+.rr em{display:block;font-style:normal;color:var(--stone);font-size:11px}
+.flag{display:inline-block;font:500 10px var(--mono);letter-spacing:.1em;background:var(--ink);color:var(--bg);padding:2px 6px;margin-left:6px;text-transform:uppercase}
+.flag.o{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.empty{padding:40px 10px;text-align:center;color:var(--stone)}
+
+/* switch */
+.sw{display:flex;align-items:center;gap:12px;min-height:48px;cursor:pointer}
+.sw input{position:absolute;opacity:0;width:1px;height:1px}
+.sw span{width:54px;height:30px;border:1px solid var(--ink);background:#fff;position:relative;flex:none;transition:.15s}
+.sw span::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;background:var(--ink);transition:.15s}
+.sw input:checked+span{background:var(--ink)}
+.sw input:checked+span::after{left:27px;background:var(--bg)}
+.sw input:focus-visible+span{outline:2px solid var(--ink);outline-offset:2px}
+
+/* photos */
+.ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.pt{border:1px solid var(--ink);background:#fff}
+.pt .im{position:relative;aspect-ratio:4/5;background:#CFCBC1;overflow:hidden}
+.pt .im img{width:100%;height:100%;object-fit:cover}
+.pt .miss{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font:500 11px var(--mono);color:var(--stone);padding:8px}
+.badge{position:absolute;top:6px;left:6px;background:var(--ink);color:var(--bg);font:500 10px var(--mono);padding:3px 7px;letter-spacing:.1em}
+.pt-b{display:grid;grid-template-columns:repeat(4,1fr)}
+.pt-b button,.pt-b label{min-height:44px;display:flex;align-items:center;justify-content:center;font:500 12px var(--mono);border-top:1px solid var(--ink);border-left:1px solid var(--line);cursor:pointer;text-transform:uppercase;letter-spacing:.04em}
+.pt-b>:first-child{border-left:0}
+.pt-b button:active,.pt-b label:active{background:var(--ink);color:var(--bg)}
+.pt-b .dl{color:var(--bad)}
+.addph{display:flex;align-items:center;justify-content:center;text-align:center;min-height:190px;border:2px dashed var(--ink);font:500 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;padding:10px}
+.addph:active{background:var(--ink);color:var(--bg)}
+.slot{display:flex;gap:14px;align-items:center}
+.slot .sm-im{width:90px;aspect-ratio:4/5;background:#CFCBC1;flex:none;overflow:hidden;display:flex;align-items:center;justify-content:center;font:500 10px var(--mono);color:var(--stone)}
+.slot .sm-im img{width:100%;height:100%;object-fit:cover}
+.slot .sq{aspect-ratio:1}
+.slot-b{display:flex;gap:8px;flex-wrap:wrap}
+.igs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+
+/* sizes */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chip{min-width:52px;min-height:46px;padding:0 14px;border:1px solid var(--ink);font:500 13px var(--mono);background:#fff}
+.chip.on{background:var(--ink);color:var(--bg)}
+.chips-l{margin:12px 0 6px}
+.srow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.srow .sz{min-width:70px;font:500 15px var(--mono)}
+.step{display:flex}
+.step button{width:52px;min-height:52px;border:1px solid var(--ink);font:500 22px var(--mono);background:#fff}
+.step button:active{background:var(--ink);color:var(--bg)}
+.step input{width:76px;min-height:52px;border:1px solid var(--ink);border-left:0;border-right:0;text-align:center;font:500 16px var(--mono);padding:0}
+.srow .state{flex:1;color:var(--stone)}
+.x{width:46px;min-height:46px;border:1px solid var(--ink);background:#fff;font-size:16px}
+.x:active{background:var(--ink);color:var(--bg)}
+.add-line{display:flex;gap:10px;margin-top:12px}
+.add-line input{flex:1}
+
+/* category rows */
+.crow{display:grid;grid-template-columns:1fr auto auto auto auto;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.crow:last-child{border-bottom:0}
+.crow>span{color:var(--stone);white-space:nowrap}
+@media(max-width:640px){.crow{grid-template-columns:1fr auto auto;}.crow>input{grid-column:1/-1}.crow>span{grid-column:1}}
+.lrow{display:flex;gap:8px;margin-bottom:8px}
+.lrow input{flex:1}
+
+/* design */
+.cl{display:flex;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--line)}
+.cl:last-child{border-bottom:0}
+.cl span{flex:1}
+.cl input[type=color]{width:64px;height:44px;padding:0;border:1px solid var(--ink);background:#fff}
+.cl code{font:500 12px var(--mono);color:var(--stone);width:70px}
+.range{display:flex;align-items:center;gap:14px}
+.range input{flex:1;accent-color:var(--ink);height:44px}
+.range b{font:500 14px var(--mono);width:52px;text-align:right}
+.presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.pre{border:1px solid var(--ink);background:#fff;text-align:left;padding:0}
+.pre .sw4{display:flex;height:34px}
+.pre .sw4 i{flex:1}
+.pre b{display:block;padding:10px;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.pre:active{outline:2px solid var(--ink)}
+
+/* modal / toast / busy */
+#modal{position:fixed;inset:0;z-index:150;background:rgba(14,14,13,.55);display:flex;align-items:center;justify-content:center;padding:18px}
+.mbox{background:var(--paper);border:1px solid var(--ink);max-width:460px;width:100%;padding:24px;display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto}
+.mbox h3{font:900 34px/.9 var(--head);text-transform:uppercase}
+.mbtns{display:flex;gap:10px;flex-wrap:wrap}
+.mbtns .btn{flex:1}
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:14px 20px;font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:0;pointer-events:none;transition:.25s;z-index:200;max-width:92vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#busy{position:fixed;inset:0;z-index:180;background:rgba(232,229,222,.8);display:flex;align-items:center;justify-content:center;font:500 13px var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.warn{border:1px solid var(--bad);color:var(--bad);padding:12px 14px;margin-bottom:18px;background:var(--paper)}
+.sep{height:1px;background:var(--line);margin:18px 0}
+.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}
+@media(max-width:560px){
+  .top{flex-wrap:wrap;padding:8px 12px;row-gap:4px}
+  .brand-a b{font-size:24px}
+  .top-r{width:100%;justify-content:flex-end}
+  .tabs{top:104px}
+  #saved{margin-right:auto}
+}
+</style>
+</head>
+<body>
+
+<div id="gate" hidden></div>
+
+<div id="shell" hidden>
+  <header class="top">
+    <div class="brand-a"><b id="brandName">OFFSEASON</b><span class="mono">Admin</span></div>
+    <div class="top-r">
+      <span id="saved" class="mono">Saved ✓</span>
+      <button class="tb pvbtn" data-act="preview">Preview</button>
+      <a class="tb" href="index.html" target="_blank" rel="noopener">Store ↗</a>
+      <button class="tb" data-act="lock">Lock</button>
+    </div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+  <div class="wrap">
+    <main id="ed"></main>
+    <aside id="pv" aria-label="Live preview">
+      <div class="pv-bar">
+        <button class="tb" data-act="pvgo" data-h="#/">Home</button>
+        <button class="tb" data-act="pvgo" data-h="#/shop">Shop</button>
+        <button class="tb" data-act="pvgo" data-h="#/cart">Cart</button>
+        <button class="tb" id="pvPhone" data-act="pvphone">Phone width</button>
+        <button class="tb pv-close" data-act="preview">Close ✕</button>
+      </div>
+      <div class="pv-frame" id="pvFrame"><iframe id="pvf" src="index.html" title="Store preview"></iframe></div>
+    </aside>
+  </div>
+</div>
+
+<div id="modal" hidden></div>
+<div id="busy" hidden>Processing photos…</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+OS.ready.then(function () {
+"use strict";
+
+var S = OS.state, SKEY = OS.SKEY;
+var ui = { tab: "products", pi: -1, q: "" };
+var unlocked = false;
+function $(s, el) { return (el || document).querySelector(s); }
+function $$(s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+
+/* ---------- auth ---------- */
+function authed() { try { return sessionStorage.getItem(SKEY) === "1" || localStorage.getItem(SKEY) === "1"; } catch (e) { return false; } }
+function setAuth(rem) { unlocked = true; try { (rem ? localStorage : sessionStorage).setItem(SKEY, "1"); } catch (e) {} }
+function clearAuth() { unlocked = false; try { sessionStorage.removeItem(SKEY); localStorage.removeItem(SKEY); } catch (e) {} }
+
+function showGate() {
+  var has = OS.hasPw(), g = $("#gate");
+  $("#shell").hidden = true; g.hidden = false;
+  g.innerHTML = '<form id="gf" class="gbox" autocomplete="off"><div class="glogo">' + esc(S.store.name) + '</div><div class="mono">Admin</div>' +
+    (has
+      ? '<p>Enter your password to edit the store.</p><div class="f"><label for="pw">Password</label><input type="password" id="pw" autocomplete="current-password" required></div><label class="chk"><input type="checkbox" id="rem"> Stay signed in on this tablet</label>'
+      : '<p>Welcome. Create a password for your editor. You will use it each time you open the admin.</p><div class="f"><label for="pw">New password (min. 6 characters)</label><input type="password" id="pw" autocomplete="new-password" required></div><div class="f"><label for="pw2">Repeat password</label><input type="password" id="pw2" autocomplete="new-password" required></div>') +
+    '<div class="gerr" id="gerr" hidden></div>' +
+    '<button class="btn full" type="submit">' + (has ? "Unlock" : "Create password") + '</button>' +
+    (has ? '<button type="button" class="link" data-act="forgot">Forgot password?</button>' : '') +
+    '<p class="fine">This password keeps people out of the editor on this device. Your edits are saved in this browser only.</p></form>';
+  setTimeout(function () { var p = $("#pw"); if (p) p.focus(); }, 50);
+}
+function gerr(m) { var e = $("#gerr"); e.textContent = m; e.hidden = false; }
+function startShell() {
+  $("#gate").hidden = true; $("#shell").hidden = false;
+  $("#brandName").textContent = S.store.name;
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+  render();
+}
+
+/* ---------- small helpers ---------- */
+var toastT;
+function toast(m) { var t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove("on"); }, 2300); }
+var savedT;
+function saved(kind) {
+  var ok = OS.save(kind), el = $("#saved");
+  el.className = "mono" + (ok ? "" : " bad");
+  el.textContent = ok ? "Saving…" : "Not saved — storage blocked";
+  clearTimeout(savedT);
+  if (ok) savedT = setTimeout(function () { el.textContent = "Saved ✓"; }, 350);
+  return ok;
+}
+function modal(o) {
+  var m = $("#modal");
+  m.hidden = false;
+  m.innerHTML = '<div class="mbox" role="dialog" aria-modal="true"><h3>' + esc(o.title) + '</h3>' + (o.body || "") +
+    '<div class="mbtns">' + o.buttons.map(function (b, i) { return '<button class="btn ' + (b.cls || "") + '" data-mb="' + i + '">' + esc(b.label) + '</button>'; }).join("") + '</div></div>';
+  m._b = o.buttons;
+}
+function closeModal() { var m = $("#modal"); m.hidden = true; m.innerHTML = ""; }
+function busy(on) { $("#busy").hidden = !on; }
+function getP(o, p) { return p.split(".").reduce(function (a, k) { return a == null ? a : a[k]; }, o); }
+function setP(o, p, v) { var ks = p.split("."), last = ks.pop(); var t = ks.reduce(function (a, k) { return a[k]; }, o); t[last] = v; }
+function delP(o, p) { var ks = p.split("."), last = ks.pop(); var t = ks.reduce(function (a, k) { return a[k]; }, o); delete t[last]; }
+function cleanHandle(v) { return String(v).trim().replace(/^https?:\/\/(www\.)?(instagram|tiktok)\.com\//i, "").replace(/^@/, "").replace(/[\/?#].*$/, "").replace(/\s+/g, ""); }
+function pad3(n) { return ("00" + n).slice(-3); }
+function nextId() { var m = 0; S.products.forEach(function (p) { var n = parseInt(p.id, 10); if (!isNaN(n) && n > m) m = n; }); var id = pad3(m + 1); while (S.products.some(function (p) { return String(p.id) === id; })) id = pad3(parseInt(id, 10) + 1); return id; }
+function countRefs(ref) {
+  var n = 0;
+  S.products.forEach(function (p) { (p.images || []).forEach(function (r) { if (r === ref) n++; }); });
+  (S.store.instagramImages || []).forEach(function (r) { if (r === ref) n++; });
+  if (S.store.heroImage === ref) n++;
+  return n;
+}
+function gc(ref) { if (ref && String(ref).indexOf("idb:") === 0 && countRefs(ref) === 0) OS.delImage(String(ref).slice(4)); }
+var SIZE_ORDER = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+function sortSizes(o) {
+  var keys = Object.keys(o);
+  function rank(k) { var i = SIZE_ORDER.indexOf(String(k).toUpperCase()); if (i > -1) return [0, i]; if (!isNaN(parseFloat(k)) && isFinite(k)) return [1, parseFloat(k)]; return [2, keys.indexOf(k)]; }
+  keys.sort(function (a, b) { var x = rank(a), y = rank(b); return x[0] - y[0] || x[1] - y[1]; });
+  var out = {}; keys.forEach(function (k) { out[k] = o[k]; }); return out;
+}
+function totalStock(p) { return Object.keys(p.sizes || {}).reduce(function (a, k) { return a + (p.sizes[k] || 0); }, 0); }
+function money(n) { return S.store.currency + (Number.isInteger(n) ? n : Number(n || 0).toFixed(2)); }
+function thumb(ref, id) {
+  var u = OS.src(ref);
+  return '<span class="th">' + (u ? '<img src="' + esc(u) + '" alt="" onerror="this.remove()">' : '') + '<i>' + esc(id || "") + '</i></span>';
+}
+
+/* ---------- field builders ---------- */
+function fld(label, inner, hint) { return '<div class="f"><label>' + label + '</label>' + inner + (hint ? '<small>' + hint + '</small>' : '') + '</div>'; }
+function inp(path, val, o) {
+  o = o || {};
+  return '<input data-p="' + path + '"' + (o.t ? ' data-t="' + o.t + '"' : '') + (o.opt ? ' data-opt="1"' : '') + (o.h ? ' data-h="1"' : '') +
+    ' type="' + (o.type || "text") + '"' + (o.mode ? ' inputmode="' + o.mode + '"' : '') + (o.step ? ' step="' + o.step + '"' : '') + (o.min != null ? ' min="' + o.min + '"' : '') +
+    (o.ph ? ' placeholder="' + esc(o.ph) + '"' : '') + (o.list ? ' list="' + o.list + '"' : '') + ' autocomplete="off" autocapitalize="' + (o.cap || "sentences") + '" value="' + esc(val == null ? "" : val) + '">';
+}
+function num(path, val, o) { o = o || {}; o.t = "num"; o.type = "number"; o.mode = "decimal"; o.step = o.step || "0.01"; o.min = 0; return inp(path, val, o); }
+function txa(path, val, rows) { return '<textarea data-p="' + path + '" rows="' + (rows || 4) + '">' + esc(val == null ? "" : val) + '</textarea>'; }
+function sw(path, val, label) { return '<label class="sw"><input type="checkbox" data-p="' + path + '" data-t="chk"' + (val ? " checked" : "") + '><span></span>' + label + '</label>'; }
+function sel(path, val, opts) {
+  return '<select data-p="' + path + '">' + opts.map(function (o) { var v = Array.isArray(o) ? o[0] : o, l = Array.isArray(o) ? o[1] : o; return '<option value="' + esc(v) + '"' + (String(v) === String(val) ? " selected" : "") + '>' + esc(l) + '</option>'; }).join("") + '</select>';
+}
+function blk(title, inner) { return '<section class="blk"><h3>' + title + '</h3>' + inner + '</section>'; }
+function h2(t, hint) { return '<h2 class="t">' + t + '</h2>' + (hint ? '<p class="hint">' + hint + '</p>' : ''); }
+function storageWarn() { return OS.storageOk ? "" : '<div class="warn">This browser is blocking storage, so changes will not be saved. Open the site in your normal browser window (not a private tab) and allow site data.</div>'; }
+
+/* ---------- product list + editor ---------- */
+function listHtml() {
+  var q = ui.q.toLowerCase();
+  var rows = S.products.map(function (p, i) { return { p: p, i: i }; }).filter(function (o) {
+    return !q || (o.p.name + " " + o.p.brand + " " + o.p.category + " " + o.p.id).toLowerCase().indexOf(q) > -1;
+  });
+  if (!rows.length) return '<p class="empty">' + (S.products.length ? "No matches." : "No products yet. Tap “+ Add product”.") + '</p>';
+  return '<div class="list">' + rows.map(function (o) {
+    var p = o.p, t = totalStock(p);
+    return '<button class="row" data-act="editprod" data-i="' + o.i + '">' + thumb((p.images || [])[0], p.id) +
+      '<span class="rt"><b>' + esc(p.name || "Untitled") +
+        (p.hidden ? '<span class="flag o">Hidden</span>' : '') + (t === 0 ? '<span class="flag o">Sold out</span>' : '') + (p.new ? '<span class="flag">New</span>' : '') + '</b>' +
+        '<i>' + esc(p.brand || "No brand") + ' · ' + esc(p.category || "No category") + '</i></span>' +
+      '<span class="rr">' + money(p.price || 0) + '<em>' + t + ' in stock</em></span></button>';
+  }).join("") + '</div>';
+}
+function viewProducts() {
+  if (ui.pi >= 0 && S.products[ui.pi]) return viewProduct(S.products[ui.pi], ui.pi);
+  ui.pi = -1;
+  return h2("Products", "Tap a product to edit it. Everything saves automatically and shows in the preview.") + storageWarn() +
+    '<div class="bar"><button class="btn" data-act="addprod">+ Add product</button><input class="search" id="q" type="search" placeholder="Search products" value="' + esc(ui.q) + '"></div>' +
+    '<div id="plist">' + listHtml() + '</div>';
+}
+function photosInner(p, i) {
+  var imgs = p.images || [];
+  return '<div class="ph-grid">' + imgs.map(function (ref, k) {
+    var u = OS.src(ref);
+    return '<div class="pt"><div class="im">' + (u ? '<img src="' + esc(u) + '" alt="" onerror="this.remove()">' : '<div class="miss">Photo not found</div>') + (k === 0 ? '<span class="badge">Main</span>' : '') + '</div>' +
+      '<div class="pt-b">' + (k > 0 ? '<button data-act="phmain" data-i="' + i + '" data-k="' + k + '" aria-label="Make main photo">★</button>' : '<button data-act="phright" data-i="' + i + '" data-k="' + k + '" aria-label="Move right"' + (imgs.length < 2 ? " disabled" : "") + '>▶</button>') +
+      (k > 0 ? '<button data-act="phright" data-i="' + i + '" data-k="' + k + '" aria-label="Move right"' + (k >= imgs.length - 1 ? " disabled" : "") + '>▶</button>' : '<label>Swap<input class="vh" type="file" accept="image/*" data-file="phrep" data-i="' + i + '" data-k="' + k + '"></label>') +
+      (k > 0 ? '<label>Swap<input class="vh" type="file" accept="image/*" data-file="phrep" data-i="' + i + '" data-k="' + k + '"></label>' : '<button disabled aria-hidden="true"> </button>') +
+      '<button class="dl" data-act="phdel" data-i="' + i + '" data-k="' + k + '" aria-label="Remove photo">✕</button></div></div>';
+  }).join("") +
+    '<label class="addph"><input class="vh" type="file" accept="image/*" multiple data-file="phadd" data-i="' + i + '"><span>+ Add photos<br>(camera or library)</span></label></div>';
+}
+var SIZE_PRESETS = [["Clothing", ["XS", "S", "M", "L", "XL", "XXL"]], ["Waist / trousers", ["28", "30", "32", "34", "36", "38"]], ["Shoes (EU)", ["38", "39", "40", "41", "42", "43", "44", "45", "46"]], ["Other", ["One size"]]];
+function sizesInner(p, i) {
+  var keys = Object.keys(p.sizes || {});
+  return SIZE_PRESETS.map(function (g) {
+    return '<div class="lab chips-l">' + g[0] + '</div><div class="chips">' + g[1].map(function (s) {
+      var on = keys.indexOf(s) > -1;
+      return '<button class="chip' + (on ? " on" : "") + '" data-act="szpreset" data-i="' + i + '" data-k="' + esc(s) + '"' + (on ? " disabled" : "") + '>' + esc(s) + '</button>';
+    }).join("") + '</div>';
+  }).join("") +
+  '<div class="add-line"><input id="newsize" placeholder="Custom size, e.g. 7.5 or XS/S" autocomplete="off" autocapitalize="characters"><button class="btn" data-act="szadd" data-i="' + i + '">Add size</button></div>' +
+  '<div class="sep"></div><div class="lab">Stock per size</div>' +
+  (keys.length ? keys.map(function (k) {
+    var n = p.sizes[k];
+    return '<div class="srow"><b class="sz">' + esc(k) + '</b><div class="step"><button data-act="szdec" data-i="' + i + '" data-k="' + esc(k) + '" aria-label="Less">−</button><input type="number" inputmode="numeric" min="0" value="' + n + '" data-sz="1" data-i="' + i + '" data-k="' + esc(k) + '"><button data-act="szinc" data-i="' + i + '" data-k="' + esc(k) + '" aria-label="More">+</button></div>' +
+      '<span class="state mono">' + (n < 1 ? "Sold out" : n <= 3 ? "Low stock" : "") + '</span><button class="x" data-act="szdel" data-i="' + i + '" data-k="' + esc(k) + '" aria-label="Remove size">✕</button></div>';
+  }).join("") : '<p class="hint" style="margin:6px 0 0">No sizes yet. Tap a size above.</p>');
+}
+function viewProduct(p, i) {
+  var b = "products." + i + ".";
+  var brands = Array.from(new Set(S.products.map(function (x) { return x.brand; }).filter(Boolean)));
+  var cats = S.categories.map(function (c) { return [c, c]; });
+  if (p.category && S.categories.indexOf(p.category) < 0) cats.unshift([p.category, p.category]);
+  cats.unshift(["", "— No category —"]);
+  return '<button class="back" data-act="back">← All products</button>' +
+    h2(esc(p.name || "Untitled"), "Ref No. " + esc(p.id) + ". Changes save automatically.") + storageWarn() +
+    blk("Details",
+      fld("Product name", inp(b + "name", p.name, { ph: "e.g. Boxy Work Jacket" })) +
+      fld("Brand", inp(b + "brand", p.brand, { ph: "e.g. NORTHLINE", list: "brandlist", cap: "characters" }) + '<datalist id="brandlist">' + brands.map(function (x) { return '<option value="' + esc(x) + '">'; }).join("") + '</datalist>') +
+      fld("Category", sel(b + "category", p.category || "", cats)) +
+      '<div class="two">' + fld("Price (" + esc(S.store.currency) + ")", num(b + "price", p.price)) + fld("Old price (optional)", num(b + "oldPrice", p.oldPrice, { opt: true }), "Shows crossed out as a sale price.") + '</div>' +
+      fld("Description", txa(b + "description", p.description, 5)) +
+      sw(b + "new", p.new, "Show “NEW” tag and feature on the homepage") +
+      sw(b + "hidden", !p.hidden, "Visible in the store")) +
+    blk("Photos", '<p class="hint">The first photo is the main one. ★ makes a photo the main one, ▶ moves it, Swap replaces it.</p><div id="photos">' + photosInner(p, i) + '</div>') +
+    blk("Sizes & stock", '<div id="sizes">' + sizesInner(p, i) + '</div>') +
+    '<div class="bar"><button class="btn ghost" data-act="dupprod" data-i="' + i + '">Duplicate</button><button class="btn danger" data-act="delprod" data-i="' + i + '">Delete product</button></div>';
+}
+
+/* ---------- categories ---------- */
+function viewCats() {
+  return h2("Categories", "These appear on the homepage and in the shop filters. Renaming a category updates its products.") +
+    '<div class="list">' + (S.categories.length ? S.categories.map(function (c, i) {
+      var n = S.products.filter(function (p) { return p.category === c; }).length;
+      return '<div class="crow"><input data-act="catname" data-i="' + i + '" value="' + esc(c) + '" aria-label="Category name" autocomplete="off"><span class="mono">' + n + ' item' + (n === 1 ? "" : "s") + '</span>' +
+        '<button class="x" data-act="catup" data-i="' + i + '" aria-label="Move up"' + (i === 0 ? " disabled" : "") + '>↑</button><button class="x" data-act="catdn" data-i="' + i + '" aria-label="Move down"' + (i === S.categories.length - 1 ? " disabled" : "") + '>↓</button>' +
+        '<button class="x" style="color:var(--bad)" data-act="catdel" data-i="' + i + '" aria-label="Delete category">✕</button></div>';
+    }).join("") : '<p class="empty">No categories yet.</p>') + '</div>' +
+    '<div class="add-line" style="margin-top:16px"><input id="newcat" placeholder="New category name" autocomplete="off"><button class="btn" data-act="catadd">+ Add</button></div>';
+}
+
+/* ---------- photo slots (hero, instagram) ---------- */
+function slot(path, ref, label, square) {
+  var u = OS.src(ref);
+  return '<div class="slot"><div class="sm-im' + (square ? " sq" : "") + '">' + (u ? '<img src="' + esc(u) + '" alt="" onerror="this.remove()">' : "No photo") + '</div><div><div class="lab">' + label + '</div><div class="slot-b">' +
+    '<label class="btn sm ghost">' + (u ? "Change" : "Upload") + '<input class="vh" type="file" accept="image/*" data-file="slot" data-p="' + path + '"></label>' +
+    (ref ? '<button class="btn sm danger" data-act="slotdel" data-p="' + path + '">Remove</button>' : '') + '</div></div></div>';
+}
+function listEditor(id, path, arr, ph) {
+  return '<div id="' + id + '">' + arr.map(function (v, k) {
+    return '<div class="lrow"><input data-p="' + path + "." + k + '" value="' + esc(v) + '" placeholder="' + esc(ph) + '" autocomplete="off"><button class="x" data-act="ldel" data-path="' + path + '" data-k="' + k + '" data-id="' + id + '" aria-label="Remove">✕</button></div>';
+  }).join("") + '</div><button class="btn ghost sm" data-act="ladd" data-path="' + path + '" data-id="' + id + '">+ Add</button>';
+}
+
+/* ---------- home / store / social / design / more ---------- */
+function viewHome() {
+  var c = S.content;
+  return h2("Home page", "The words on your first page. You can use {name} (store name), {freeOver} (free-delivery amount) and {n} (pieces in stock).") + storageWarn() +
+    blk("Top of the page",
+      fld("Small label (top left)", inp("content.heroLabel", c.heroLabel)) +
+      fld("Stock counter (top right)", inp("content.heroCount", c.heroCount), "{n} becomes the number of pieces in stock.") +
+      fld("Line under the big name", txa("store.tagline", S.store.tagline, 2)) +
+      '<div class="two">' + fld("Button 1", inp("content.button1", c.button1)) + fld("Button 2", inp("content.button2", c.button2)) + '</div>' +
+      slot("store.heroImage", S.store.heroImage, "Wide banner photo (optional)", false)) +
+    blk("Scrolling strip", '<p class="hint">The moving black strip. Leave it empty to hide the strip.</p>' + listEditor("mq", "content.marquee", c.marquee, "Strip text")) +
+    blk("Section titles",
+      '<div class="two">' + fld("New-in title", inp("content.newInTitle", c.newInTitle)) + fld("“View all” link", inp("content.newInLink", c.newInLink)) + '</div>' +
+      fld("Categories title", inp("content.categoriesTitle", c.categoriesTitle))) +
+    blk("Big statement",
+      fld("Statement", txa("content.statement", c.statement, 3)) +
+      fld("Small line under it (optional)", inp("content.statementSmall", c.statementSmall))) +
+    blk("Info boxes",
+      fld("Delivery note", txa("content.infoDelivery", c.infoDelivery, 2), "The delivery price is added automatically from the Store tab.") +
+      fld("Payment note", txa("content.infoPayment", c.infoPayment, 2), "The payment methods are added automatically.") +
+      fld("Returns note", txa("content.infoReturns", c.infoReturns, 2)));
+}
+function viewStore() {
+  var st = S.store;
+  return h2("Store & contact") + storageWarn() +
+    blk("Name",
+      fld("Store name / logo text", inp("store.name", st.name, { cap: "characters" }), "Shows in the header, the giant homepage name and the footer.")) +
+    blk("Contact (shown in the footer)",
+      fld("Public email", inp("store.contactEmail", st.contactEmail, { type: "email", cap: "none" })) +
+      fld("Phone", inp("store.phone", st.phone, { type: "tel" })) +
+      fld("Address / city", inp("store.address", st.address)) +
+      fld("Opening hours", inp("store.hours", st.hours, { ph: "Mon–Sat 10:00–19:00" }))) +
+    blk("Orders",
+      fld("Email that receives orders", inp("store.orderEmail", st.orderEmail, { type: "email", cap: "none" }), "Real order emails only work once your store is online. Use the same email for the activation link.") +
+      fld("WhatsApp number (optional)", inp("store.whatsapp", st.whatsapp, { type: "tel", ph: "355691234567" }), "Country code first, digits only.")) +
+    blk("Prices & delivery",
+      fld("Currency symbol", inp("store.currency", st.currency, { ph: "€" })) +
+      '<div class="two">' + fld("Delivery price", num("store.shippingFee", st.shippingFee), "0 = free delivery.") + fld("Free delivery over", num("store.freeShippingOver", st.freeShippingOver), "0 = turn off.") + '</div>' +
+      '<div class="lab">Payment methods at checkout</div>' + listEditor("pay", "store.payments", st.payments, "e.g. Cash on delivery"));
+}
+function viewSocial() {
+  var st = S.store;
+  return h2("Social", "Your handles and the six photos in the Instagram section.") + storageWarn() +
+    blk("Accounts",
+      fld("Instagram username", inp("store.instagram", st.instagram, { h: true, cap: "none", ph: "offseason" }), "Without the @. You can paste your profile link, it gets cleaned up.") +
+      fld("TikTok username (optional)", inp("store.tiktok", st.tiktok, { h: true, cap: "none" })) +
+      fld("Facebook link (optional)", inp("store.facebook", st.facebook, { type: "url", cap: "none", ph: "facebook.com/yourpage" })) +
+      fld("YouTube link (optional)", inp("store.youtube", st.youtube, { type: "url", cap: "none" }))) +
+    blk("Instagram section photos", '<p class="hint">Square photos work best. Each one links to your Instagram profile.</p><div class="igs" id="igs">' +
+      [0, 1, 2, 3, 4, 5].map(function (k) { return slot("store.instagramImages." + k, (st.instagramImages || [])[k], "Photo " + (k + 1), true); }).join("") + '</div>');
+}
+var COLORS = [["bone", "Background"], ["paper", "Panels"], ["ink", "Text & dark areas"], ["stone", "Muted text"], ["line", "Thin lines"]];
+function viewDesign() {
+  var t = S.theme;
+  return h2("Design", "Basic look settings. The default is the OFFSEASON look you approved.") + storageWarn() +
+    blk("Colour themes", '<div class="presets">' + Object.keys(OS.PRESETS).map(function (n) {
+      var p = OS.PRESETS[n];
+      return '<button class="pre" data-act="preset" data-n="' + esc(n) + '"><span class="sw4"><i style="background:' + p.bone + '"></i><i style="background:' + p.paper + '"></i><i style="background:' + p.ink + '"></i><i style="background:' + p.stone + '"></i></span><b>' + esc(n) + '</b></button>';
+    }).join("") + '</div>') +
+    blk("Colours", COLORS.map(function (c) {
+      return '<label class="cl"><span>' + c[1] + '</span><input type="color" data-p="theme.' + c[0] + '" value="' + esc(t[c[0]]) + '"><code>' + esc(String(t[c[0]]).toUpperCase()) + '</code></label>';
+    }).join("")) +
+    blk("Fonts",
+      fld("Headings", sel("theme.headFont", t.headFont, Object.keys(OS.FONTS.head))) +
+      fld("Body text", sel("theme.bodyFont", t.bodyFont, Object.keys(OS.FONTS.body)))) +
+    blk("Style",
+      fld("Corner roundness", '<div class="range"><input type="range" min="0" max="24" step="1" data-p="theme.radius" data-t="num" value="' + (t.radius || 0) + '"><b id="radv">' + (t.radius || 0) + 'px</b></div>', "0 = sharp corners (current look).") +
+      sw("theme.grain", t.grain, "Subtle film-grain texture")) +
+    '<button class="btn ghost" data-act="resetdesign">Reset design to the original</button>';
+}
+function viewMore() {
+  var nImg = Object.keys(OS.urls).length;
+  return h2("Backup & more") + storageWarn() +
+    blk("Backup",
+      '<p class="hint">Your store is saved inside this browser. If you clear the browser’s data (or Safari removes it after weeks of not using the site), it is gone. Download a backup now and then. It includes your photos.</p>' +
+      '<div class="bar"><button class="btn" data-act="export">Download backup</button><label class="btn ghost">Restore from backup<input class="vh" type="file" accept=".json,application/json" data-file="import"></label></div>' +
+      '<div class="kv"><span>Products</span><b>' + S.products.length + '</b></div><div class="kv"><span>Photos stored</span><b>' + nImg + '</b></div>') +
+    blk("Password",
+      fld("Current password", '<input type="password" id="pw-old" autocomplete="current-password">') +
+      fld("New password (min. 6 characters)", '<input type="password" id="pw-new" autocomplete="new-password">') +
+      '<button class="btn" data-act="setpw">Change password</button>') +
+    blk("Start over",
+      '<p class="hint">Remove all your changes and photos and go back to the demo store. Your password stays.</p><button class="btn danger" data-act="reset">Reset to demo store</button>');
+}
+
+/* ---------- render ---------- */
+var TABS = [["products", "Products"], ["cats", "Categories"], ["home", "Home page"], ["store", "Store & contact"], ["social", "Social"], ["design", "Design"], ["more", "Backup & more"]];
+function renderTabs() { $("#tabs").innerHTML = TABS.map(function (t) { return '<button class="tab' + (ui.tab === t[0] ? " on" : "") + '" data-act="tab" data-t="' + t[0] + '">' + t[1] + '</button>'; }).join(""); }
+function render(keepScroll) {
+  var y = window.scrollY, ey = $("#ed").scrollTop;
+  renderTabs();
+  var views = { products: viewProducts, cats: viewCats, home: viewHome, store: viewStore, social: viewSocial, design: viewDesign, more: viewMore };
+  $("#ed").innerHTML = views[ui.tab]();
+  if (keepScroll) { window.scrollTo(0, y); $("#ed").scrollTop = ey; } else { window.scrollTo(0, 0); $("#ed").scrollTop = 0; }
+  pvForView();
+}
+function pvGo(h) { try { var w = $("#pvf").contentWindow; if (w.location.hash !== h) w.location.hash = h; } catch (e) {} }
+function pvForView() {
+  var h = "#/";
+  if (ui.tab === "products" && ui.pi >= 0 && S.products[ui.pi]) h = "#/product/" + encodeURIComponent(S.products[ui.pi].id);
+  else if (ui.tab === "products") h = "#/shop";
+  else if (ui.tab === "cats") h = "#/shop";
+  pvGo(h);
+}
+
+/* ---------- photo handling ---------- */
+function processFiles(files) {
+  var out = [], chain = Promise.resolve();
+  busy(true);
+  Array.prototype.forEach.call(files, function (f) {
+    chain = chain.then(function () {
+      return OS.compress(f).then(function (b) {
+        var id = OS.uid();
+        return OS.putImage(id, b).then(function (ok) { if (!ok) throw new Error("store"); out.push("idb:" + id); });
+      });
+    }).catch(function (e) { toast("Couldn't add " + (f.name || "a photo") + (e && e.message === "store" ? " (browser storage blocked)" : "")); });
+  });
+  return chain.then(function () { busy(false); return out; });
+}
+function afterPhotos(i) {
+  saved("images");
+  if (i != null && $("#photos")) $("#photos").innerHTML = photosInner(S.products[i], i);
+}
+function handleFile(el) {
+  var kind = el.dataset.file, files = el.files, i = el.dataset.i != null ? +el.dataset.i : null, k = el.dataset.k != null ? +el.dataset.k : null;
+  if (!files || !files.length) return;
+  if (kind === "import") { importBackup(files[0]); el.value = ""; return; }
+  processFiles(files).then(function (refs) {
+    if (!refs.length) return;
+    if (kind === "phadd") { var p = S.products[i]; p.images = (p.images || []).concat(refs); afterPhotos(i); toast(refs.length + " photo" + (refs.length > 1 ? "s" : "") + " added"); }
+    else if (kind === "phrep") { var q = S.products[i], old = q.images[k]; q.images[k] = refs[0]; gc(old); afterPhotos(i); toast("Photo changed"); }
+    else if (kind === "slot") { var path = el.dataset.p, o = getP(S, path); setP(S, path, refs[0]); gc(o); saved("images"); render(true); toast("Photo saved"); }
+  });
+  el.value = "";
+}
+
+/* ---------- backup ---------- */
+function blobToDataURL(b) { return new Promise(function (res) { var r = new FileReader(); r.onload = function () { res(r.result); }; r.readAsDataURL(b); }); }
+function dataURLToBlob(u) { var m = u.match(/^data:([^;]+);base64,(.*)$/), bin = atob(m[2]), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], { type: m[1] }); }
+function exportBackup() {
+  busy(true); $("#busy").textContent = "Preparing backup…";
+  OS.allBlobs().then(function (map) {
+    var ids = Object.keys(map), imgs = {};
+    return ids.reduce(function (c, id) { return c.then(function () { return blobToDataURL(map[id]).then(function (u) { imgs[id] = u; }); }); }, Promise.resolve()).then(function () { return imgs; });
+  }).then(function (imgs) {
+    var blob = new Blob([JSON.stringify({ app: "offseason", v: 1, state: S, images: imgs })], { type: "application/json" });
+    var a = document.createElement("a"), d = new Date().toISOString().slice(0, 10);
+    a.href = URL.createObjectURL(blob); a.download = "offseason-backup-" + d + ".json";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    busy(false); $("#busy").textContent = "Processing photos…"; toast("Backup downloaded");
+  });
+}
+function importBackup(file) {
+  var r = new FileReader();
+  r.onload = function () {
+    var d; try { d = JSON.parse(r.result); } catch (e) { return toast("That file isn't a valid backup"); }
+    if (!d || d.app !== "offseason" || !d.state) return toast("That file isn't an OFFSEASON backup");
+    modal({ title: "Restore backup?", body: "<p>This replaces everything currently in the editor with the backup.</p>", buttons: [
+      { label: "Cancel", cls: "ghost", fn: closeModal },
+      { label: "Restore", fn: function () {
+        closeModal(); busy(true);
+        OS.clearImages().then(function () {
+          var ids = Object.keys(d.images || {});
+          return ids.reduce(function (c, id) { return c.then(function () { return OS.putImage(id, dataURLToBlob(d.images[id])); }); }, Promise.resolve());
+        }).then(function () { S = OS.setState(d.state); saved("images"); busy(false); ui.pi = -1; render(); toast("Backup restored"); });
+      } }
+    ] });
+  };
+  r.readAsText(file);
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", function (e) {
+  var mb = e.target.closest("[data-mb]");
+  if (mb) { var m = $("#modal"); var b = m._b[+mb.dataset.mb]; if (b && b.fn) b.fn(); return; }
+  var t = e.target.closest("[data-act]");
+  if (!t || t.tagName === "INPUT" && t.dataset.act === "catname") return;
+  var act = t.dataset.act, i = t.dataset.i != null ? +t.dataset.i : null, k = t.dataset.k;
+  var p = i != null ? S.products[i] : null;
+
+  if (act === "tab") { ui.tab = t.dataset.t; ui.pi = -1; render(); }
+  else if (act === "preview") { document.body.classList.toggle("pv-open"); try { $("#pvf").contentWindow.__osReload(); } catch (x) {} }
+  else if (act === "pvgo") pvGo(t.dataset.h);
+  else if (act === "pvphone") { var f = $("#pvFrame"); f.classList.toggle("phone"); t.classList.toggle("on"); try { setTimeout(function () { $("#pvf").contentWindow.__osReload(); }, 100); } catch (x) {} }
+  else if (act === "lock") { clearAuth(); document.body.classList.remove("pv-open"); showGate(); }
+  else if (act === "forgot") {
+    modal({ title: "Forgot password?", body: "<p>A forgotten password can't be recovered. The only way back in is to erase everything saved on this device (products, photos, settings) and start again. If you have a backup file you can restore it afterwards.</p>", buttons: [
+      { label: "Cancel", cls: "ghost", fn: closeModal },
+      { label: "Erase & start over", cls: "danger", fn: function () { OS.wipe().then(function () { location.reload(); }); } }
+    ] });
+  }
+
+  /* products */
+  else if (act === "addprod") {
+    var np = { id: nextId(), brand: "", name: "New product", category: S.categories[0] || "", price: 0, images: [], description: "", sizes: {} };
+    S.products.push(np); saved(); ui.pi = S.products.length - 1; render(); toast("Product added. Fill in the details.");
+  }
+  else if (act === "editprod") { ui.pi = i; render(); }
+  else if (act === "back") { ui.pi = -1; render(); }
+  else if (act === "dupprod") {
+    var c = OS.clone(p); c.id = nextId(); c.name = (p.name || "Product") + " (copy)"; S.products.splice(i + 1, 0, c); saved(); ui.pi = i + 1; render(); toast("Duplicated");
+  }
+  else if (act === "delprod") {
+    modal({ title: "Delete product?", body: "<p><b>" + esc(p.name || "Untitled") + "</b> and its photos will be removed. This can't be undone.</p>", buttons: [
+      { label: "Cancel", cls: "ghost", fn: closeModal },
+      { label: "Delete", cls: "danger", fn: function () { var imgs = p.images || []; S.products.splice(i, 1); imgs.forEach(gc); closeModal(); saved("images"); ui.pi = -1; render(); toast("Product deleted"); } }
+    ] });
+  }
+  else if (act === "phdel") { var r = p.images.splice(+k, 1)[0]; gc(r); afterPhotos(i); }
+  else if (act === "phmain") { var m1 = p.images.splice(+k, 1)[0]; p.images.unshift(m1); afterPhotos(i); }
+  else if (act === "phright") { var kk = +k; if (kk < p.images.length - 1) { var tmp = p.images[kk]; p.images[kk] = p.images[kk + 1]; p.images[kk + 1] = tmp; afterPhotos(i); } }
+  else if (act === "szpreset") { if (!(k in p.sizes)) { p.sizes[k] = 1; p.sizes = sortSizes(p.sizes); saved(); $("#sizes").innerHTML = sizesInner(p, i); } }
+  else if (act === "szadd") {
+    var v = ($("#newsize").value || "").trim();
+    if (!v) return toast("Type a size first");
+    if (v in p.sizes) return toast("That size already exists");
+    p.sizes[v] = 1; p.sizes = sortSizes(p.sizes); saved(); $("#sizes").innerHTML = sizesInner(p, i);
+  }
+  else if (act === "szinc" || act === "szdec") { p.sizes[k] = Math.max(0, (p.sizes[k] || 0) + (act === "szinc" ? 1 : -1)); saved(); $("#sizes").innerHTML = sizesInner(p, i); }
+  else if (act === "szdel") { delete p.sizes[k]; saved(); $("#sizes").innerHTML = sizesInner(p, i); }
+
+  /* categories */
+  else if (act === "catadd") {
+    var nm = ($("#newcat").value || "").trim();
+    if (!nm) return toast("Type a category name");
+    if (S.categories.some(function (c2) { return c2.toLowerCase() === nm.toLowerCase(); })) return toast("That category already exists");
+    S.categories.push(nm); saved(); render(true); toast("Category added");
+  }
+  else if (act === "catup" || act === "catdn") {
+    var j = act === "catup" ? i - 1 : i + 1;
+    if (j < 0 || j >= S.categories.length) return;
+    var tc = S.categories[i]; S.categories[i] = S.categories[j]; S.categories[j] = tc; saved(); render(true);
+  }
+  else if (act === "catdel") {
+    var cname = S.categories[i], n = S.products.filter(function (x) { return x.category === cname; }).length;
+    var others = S.categories.filter(function (x) { return x !== cname; });
+    modal({ title: "Delete “" + cname + "”?", body: n ? "<p>" + n + " product" + (n > 1 ? "s are" : " is") + " in this category. Move " + (n > 1 ? "them" : "it") + " to:</p><select id=\"mv\"><option value=\"\">— No category —</option>" + others.map(function (o) { return "<option>" + esc(o) + "</option>"; }).join("") + "</select>" : "<p>This category is empty.</p>", buttons: [
+      { label: "Cancel", cls: "ghost", fn: closeModal },
+      { label: "Delete", cls: "danger", fn: function () {
+        var to = $("#mv") ? $("#mv").value : "";
+        S.products.forEach(function (x) { if (x.category === cname) x.category = to; });
+        S.categories.splice(i, 1); closeModal(); saved(); render(true); toast("Category deleted");
+      } }
+    ] });
+  }
+
+  /* generic lists */
+  else if (act === "ladd") { var arr = getP(S, t.dataset.path); arr.push(""); saved(); refreshList(t.dataset.id, t.dataset.path); var ins = $$("#" + t.dataset.id + " input"); if (ins.length) ins[ins.length - 1].focus(); }
+  else if (act === "ldel") { getP(S, t.dataset.path).splice(+k, 1); saved(); refreshList(t.dataset.id, t.dataset.path); }
+  else if (act === "slotdel") { var old = getP(S, t.dataset.p); setP(S, t.dataset.p, ""); gc(old); saved("images"); render(true); }
+
+  /* design */
+  else if (act === "preset") { var pr = OS.PRESETS[t.dataset.n]; Object.keys(pr).forEach(function (c3) { S.theme[c3] = pr[c3]; }); saved(); render(true); }
+  else if (act === "resetdesign") { S.theme = OS.clone(OS.defaults().theme); saved(); render(true); toast("Design reset"); }
+
+  /* backup & password */
+  else if (act === "export") exportBackup();
+  else if (act === "setpw") {
+    var oldp = $("#pw-old").value, newp = $("#pw-new").value;
+    if (newp.length < 6) return toast("New password needs 6+ characters");
+    OS.checkPw(oldp).then(function (ok) { if (!ok) return toast("Current password is wrong"); return OS.setPw(newp).then(function () { $("#pw-old").value = ""; $("#pw-new").value = ""; toast("Password changed"); }); });
+  }
+  else if (act === "reset") {
+    modal({ title: "Reset to demo store?", body: "<p>All your products, photos, texts and design changes will be erased. Download a backup first if you might want them back.</p>", buttons: [
+      { label: "Cancel", cls: "ghost", fn: closeModal },
+      { label: "Erase & reset", cls: "danger", fn: function () { closeModal(); OS.clearImages().then(function () { S = OS.setState(null); saved("images"); ui.pi = -1; render(); toast("Reset to demo store"); }); } }
+    ] });
+  }
+});
+function refreshList(id, path) {
+  var holder = $("#" + id), arr = getP(S, path);
+  var ph = path === "store.payments" ? "e.g. Cash on delivery" : "Strip text";
+  holder.innerHTML = arr.map(function (v, k) {
+    return '<div class="lrow"><input data-p="' + path + "." + k + '" value="' + esc(v) + '" placeholder="' + esc(ph) + '" autocomplete="off"><button class="x" data-act="ldel" data-path="' + path + '" data-k="' + k + '" data-id="' + id + '" aria-label="Remove">✕</button></div>';
+  }).join("");
+}
+
+function onField(el) {
+  if (el.id === "q") { ui.q = el.value; $("#plist").innerHTML = listHtml(); return; }
+  if (el.dataset.sz) { var pr = S.products[+el.dataset.i]; pr.sizes[el.dataset.k] = Math.max(0, parseInt(el.value, 10) || 0); saved(); var st = el.closest(".srow").querySelector(".state"); var n = pr.sizes[el.dataset.k]; st.textContent = n < 1 ? "Sold out" : n <= 3 ? "Low stock" : ""; return; }
+  var path = el.dataset.p; if (!path) return;
+  var t = el.dataset.t, v;
+  if (t === "chk") { v = el.checked; if (/\.hidden$/.test(path)) v = !v; }
+  else if (t === "num") {
+    if (el.value === "") { if (el.dataset.opt) { delP(S, path); saved(); return; } v = 0; } else { v = parseFloat(el.value); if (isNaN(v)) return; }
+  }
+  else if (el.dataset.h) v = cleanHandle(el.value);
+  else if (path === "store.whatsapp") v = el.value.replace(/[^\d+]/g, "");
+  else v = el.value;
+  setP(S, path, v); saved();
+  if (path === "store.name") $("#brandName").textContent = v;
+  if (/^theme\./.test(path)) {
+    var code = el.nextElementSibling; if (code && code.tagName === "CODE") code.textContent = String(v).toUpperCase();
+    if (path === "theme.radius") $("#radv").textContent = v + "px";
+  }
+  if (/^products\.\d+\.name$/.test(path)) { var h = $("#ed h2.t"); if (h) h.textContent = v || "Untitled"; }
+}
+document.addEventListener("input", function (e) { var el = e.target; if (el.dataset && (el.dataset.p || el.dataset.sz) || el.id === "q") onField(el); });
+document.addEventListener("change", function (e) {
+  var el = e.target;
+  if (el.dataset.file) return handleFile(el);
+  if (el.dataset.act === "catname") {
+    var i = +el.dataset.i, old = S.categories[i], nv = el.value.trim();
+    if (!nv) { el.value = old; return toast("Name can't be empty"); }
+    if (S.categories.some(function (c, j) { return j !== i && c.toLowerCase() === nv.toLowerCase(); })) { el.value = old; return toast("That name is already used"); }
+    S.categories[i] = nv; S.products.forEach(function (p) { if (p.category === old) p.category = nv; }); saved(); toast("Renamed"); return;
+  }
+  if (el.dataset && (el.dataset.p || el.dataset.sz)) onField(el);
+});
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Enter" && e.target.id === "newsize") { e.preventDefault(); $('[data-act="szadd"]').click(); }
+  if (e.key === "Enter" && e.target.id === "newcat") { e.preventDefault(); $('[data-act="catadd"]').click(); }
+  if (e.key === "Escape") closeModal();
+});
+document.addEventListener("submit", function (e) {
+  if (e.target.id !== "gf") return;
+  e.preventDefault();
+  var pw = $("#pw").value;
+  if (OS.hasPw()) {
+    OS.checkPw(pw).then(function (ok) { if (!ok) return gerr("Wrong password. Try again."); setAuth($("#rem") && $("#rem").checked); startShell(); });
+  } else {
+    if (pw.length < 6) return gerr("Use at least 6 characters.");
+    if (pw !== $("#pw2").value) return gerr("The two passwords don't match.");
+    OS.setPw(pw).then(function (ok) { if (!ok) return gerr("This browser is blocking storage, so the password can't be saved."); setAuth(false); startShell(); });
+  }
+});
+
+/* ---------- boot ---------- */
+if (OS.hasPw() && (unlocked || authed())) { unlocked = true; startShell(); } else showGate();
+});
+</script>
+</body>
+</html>
